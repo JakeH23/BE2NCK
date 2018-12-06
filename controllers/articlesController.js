@@ -2,15 +2,19 @@ const connection = require('../db/connection');
 
 exports.getAllArticles = (req, res, next) => {
   const { limit: maxResult = 10 } = req.query;
-  const { sort_by = 'created_at' } = req.query;
+  let { sort_by } = req.query;
   const { sort_ascending } = req.query;
   const { p = 1 } = req.query;
   let order_by = 'desc';
-  if (sort_ascending) {
+  if (sort_ascending === 'true') {
     order_by = 'asc';
   }
+  if (isNaN(+maxResult)) return next({ status: 400, message: 'invalid syntax for limit query' });
+  if (isNaN(+p)) return next({ status: 400, message: 'invalid syntax for limit query' });
+  const validSortQueries = ['title', 'article_id', 'created_by', 'body', 'created_at'];
+  if (!validSortQueries.includes(sort_by)) sort_by = 'created_at';
 
-  connection('articles')
+  return connection('articles')
     .select(
       'username AS author',
       'title',
@@ -83,16 +87,20 @@ exports.deleteArticle = (req, res, next) => {
 };
 
 exports.fetchAllCommentsOnArticle = (req, res, next) => {
+  const { article_id } = req.params;
   const { limit: maxResult = 10 } = req.query;
-  const { sort_by = 'created_at' } = req.query;
+  let { sort_by } = req.query;
   const { sort_ascending } = req.query;
   const { p = 1 } = req.query;
   let order_by = 'desc';
-  if (sort_ascending) {
+  if (sort_ascending === 'true') {
     order_by = 'asc';
   }
-  const { article_id } = req.params;
-  connection('comments')
+  if (isNaN(+maxResult)) return next({ status: 400, message: 'invalid syntax for limit query' });
+  if (isNaN(+p)) return next({ status: 400, message: 'invalid syntax for limit query' });
+  const validSortQueries = ['title', 'article_id', 'created_by', 'body', 'created_at'];
+  if (!validSortQueries.includes(sort_by)) sort_by = 'created_at';
+  return connection('comments')
     .select(
       'comments.comment_id',
       'comments.votes',

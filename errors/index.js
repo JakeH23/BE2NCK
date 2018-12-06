@@ -3,7 +3,8 @@ exports.handle400 = (err, req, res, next) => {
     42703: 'invalid input',
     '22P02': 'invalid input syntax for integer',
   };
-  if (errCodes[err.code]) {
+  if (err.status === 400) res.status(400).send({ message: err.message });
+  else if (errCodes[err.code]) {
     res.status(400)
       .send({ status: errCodes[err.code] });
   } else next(err);

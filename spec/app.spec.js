@@ -54,7 +54,7 @@ describe('/api', () => {
       .then((res) => {
         expect(res.body.message).to.equal('this method is not allowed');
       }));
-    it('POST ERROR - responds with 422 if client enters non-unique slug', () => {
+    it('POST ERROR - returns status 422 if user enters non-unique slug', () => {
       const topic = {
         description: 'everybody needs somebody to love',
         slug: 'mitch',
@@ -70,7 +70,7 @@ describe('/api', () => {
 
 
     describe('/:topic/articles', () => {
-      it('GET - status 200 and responds with an array of article objects for a given topic', () => request
+      it('GET - returns status 200 and responds with an array of article objects for a given topic', () => request
         .get('/api/topics/mitch/articles')
         .expect(200)
         .then((res) => {
@@ -86,52 +86,82 @@ describe('/api', () => {
             'body',
           );
         }));
-      it('GET - return 200 status a limit query', () => request
+      it('GET - returns status 200 and abides by a limit query', () => request
         .get('/api/topics/mitch/articles?limit=1')
-        .expect(200).then((res) => {
+        .expect(200)
+        .then((res) => {
           expect(res.body.articles).to.have.length(1);
         }));
-      it('GET - return 200 and articles sorted by default of column created_at', () => request
+      it('GET ERROR - returns status 400 if invalid syntax is used in the limit query', () => request
+        .get('/api/topics/mitch/articles?limit=banana')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.message).to.equal('invalid syntax for limit query');
+        }));
+
+      it('GET - returns status 200 and articles sorted by default of column created_at', () => request
         .get('/api/topics/mitch/articles')
         .expect(200)
         .then((res) => {
           expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
         }));
-      it('GET - return 200 and articles sorted by chosen column', () => request
+      it('GET - returns status 200 and articles sorted by chosen column', () => request
         .get('/api/topics/mitch/articles?sort_by=title')
         .expect(200)
         .then((res) => {
           expect(res.body.articles[0].title).to.equal('Z');
         }));
-      it('GET - return 200 and articles sorted by default column and user chosen order of sort', () => request
+      it('GET ERROR - returns status 200 and articles sorted by default of column created_at if invalid sort is given', () => request
+        .get('/api/topics/mitch/articles?sort_by=banana')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
+        }));
+      it('GET - returns status 200 and articles sorted by default', () => request
+        .get('/api/topics/mitch/articles')
+        .expect(200).then((res) => {
+          expect(res.body.articles[1].title).to.equal('Sony Vaio; or, The Laptop');
+        }));
+      it('GET - returns status 200 and articles sorted by default column and user chosen order of sort', () => request
         .get('/api/topics/mitch/articles?sort_ascending=true')
         .expect(200).then((res) => {
           expect(res.body.articles[0].title).to.equal('Moustache');
         }));
-      it('GET - return 200 and articles sorted by chosen column and order of sort', () => request
+      it('GET ERROR- returns status 200 when given sort ascending query is given invalid syntax', () => request
+        .get('/api/topics/mitch/articles?sort_ascending=banana')
+        .expect(200).then((res) => {
+          expect(res.body.articles[1].title).to.equal('Sony Vaio; or, The Laptop');
+        }));
+      it('GET - returns status 200 and articles sorted by chosen column and order of sort', () => request
         .get('/api/topics/mitch/articles?sort_by=title&sort_ascending=true')
         .expect(200)
         .then((res) => {
           expect(res.body.articles[0].title).to.equal('A');
         }));
-      it('GET - return 200 and articles sorted by chosen column and order of sort', () => request
+      it('GET - returns status 200 and articles on a given page', () => request
         .get('/api/topics/mitch/articles?p=2')
         .expect(200)
         .then((res) => {
           expect(res.body.articles[0].title).to.equal('Moustache');
         }));
-      it('GET - return 200 and articles sorted by default column and default order of sort when given invalid sort value', () => request
+      it('GET ERROR - returns status 400 if invalid syntax is used in the p query', () => request
+        .get('/api/topics/mitch/articles?p=banana')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.message).to.equal('invalid syntax for limit query');
+        }));
+      it('GET - returns status 200 and articles sorted by default column and default order of sort when given invalid sort value', () => request
         .get('/api/topics/mitch/articles?sort_ascending=banana')
         .expect(200).then((res) => {
-          expect(res.body.articles[0].title).to.equal('Moustache');
+          expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
         }));
-      it('GET ERROR - returns 404 if given non existant topic', () => request
+      it('GET ERROR - returns status 404 if given non existant topic', () => request
         .get('/api/topics/banana/articles')
         .expect(404)
         .then((res) => {
           expect(res.body.message).to.equal('Page not found');
         }));
-      it('POST - returns 201 and an object with the posted value', () => {
+      it('POST - returns status 201 and an object with the given parameters', () => {
         const postTest = {
           title: 'Heroes And Villians',
           body: "Let's get down to business to defeat the huns",
@@ -146,7 +176,7 @@ describe('/api', () => {
             expect(res.body.newArticle.article_id).to.equal(13);
           });
       });
-      it('POST ERROR - returns 400 if the wrong fields are provided', () => {
+      it('POST ERROR - returns status 400 if the wrong fields are provided', () => {
         const postTest = {
           title: 'Heroes And Villians',
           created_by: '2',
@@ -160,7 +190,7 @@ describe('/api', () => {
             expect(res.body.status).to.equal('invalid input');
           });
       });
-      it('POST ERROR - returns 422 if topic parameter doesnt exist', () => {
+      it('POST ERROR - returns status 422 if topic parameter doesnt exist', () => {
         const postTest = {
           title: 'Heroes And Villians',
           body: "Let's get down to business to defeat the huns",
@@ -185,7 +215,7 @@ describe('/api', () => {
 
 
   describe('/articles', () => {
-    it('GET - returns 200 responds with an array of topic objects', () => request
+    it('GET - returns status 200 responds with an array of article objects', () => request
       .get('/api/articles')
       .expect(200)
       .then((res) => {
@@ -203,44 +233,67 @@ describe('/api', () => {
         expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
         expect(res.body.articles).to.have.length(10);
       }));
-    it('GET - return 200 status a limit query', () => request
+    it('GET - returns status 200 and abides by a limit query', () => request
       .get('/api/articles?limit=1')
       .expect(200).then((res) => {
         expect(res.body.articles).to.have.length(1);
       }));
-    it('GET - return 200 and articles sorted by default of column created_at', () => request
+    it('GET ERROR - returns status 400 if invalid syntax is used in the limit query', () => request
+      .get('/api/articles?limit=banana')
+      .expect(400)
+      .then((res) => {
+        expect(res.body.message).to.equal('invalid syntax for limit query');
+      }));
+    it('GET - returns status 200 and articles sorted by default of column created_at', () => request
       .get('/api/articles')
       .expect(200)
       .then((res) => {
         expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
       }));
-    it('GET - return 200 and articles sorted by chosen column', () => request
+    it('GET - returns status 200 and articles sorted by chosen column', () => request
       .get('/api/articles?sort_by=title')
       .expect(200)
       .then((res) => {
         expect(res.body.articles[0].title).to.equal('Z');
       }));
-    it('GET - return 200 and articles sorted by default column and user chosen order of sort', () => request
+    it('GET ERROR - returns status 200 and articles sorted by default of column created_at if invalid sort is given', () => request
+      .get('/api/articles?sort_by=banana')
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
+      }));
+    it('GET - returns status 200 and articles sorted by default column and user chosen order of sort', () => request
       .get('/api/articles?sort_ascending=true')
       .expect(200).then((res) => {
         expect(res.body.articles[0].title).to.equal('Moustache');
       }));
-    it('GET - return 200 and articles sorted by chosen column and order of sort', () => request
+    it('GET ERROR- returns status 200 when given sort ascending query is given invalid syntax', () => request
+      .get('/api/articles?sort_ascending=banana')
+      .expect(200).then((res) => {
+        expect(res.body.articles[1].title).to.equal('Sony Vaio; or, The Laptop');
+      }));
+    it('GET - returns status 200 and articles sorted by chosen column and order of sort', () => request
       .get('/api/articles?sort_by=title&sort_ascending=true')
       .expect(200)
       .then((res) => {
         expect(res.body.articles[0].title).to.equal('A');
       }));
-    it('GET - return 200 and articles sorted by chosen column and order of sort', () => request
+    it('GET - returns status 200 and articles on a given page', () => request
       .get('/api/articles?p=2')
       .expect(200)
       .then((res) => {
         expect(res.body.articles[0].title).to.equal('Am I a cat?');
       }));
-    it('GET - return 200 and articles sorted by default column and default order of sort when given invalid sort value', () => request
+    it('GET ERROR - returns status 400 if invalid syntax is used in the p query', () => request
+      .get('/api/articles?p=banana')
+      .expect(400)
+      .then((res) => {
+        expect(res.body.message).to.equal('invalid syntax for limit query');
+      }));
+    it('GET - returns status 200 and articles sorted by default column and default order of sort when given invalid sort value', () => request
       .get('/api/articles?sort_ascending=banana')
       .expect(200).then((res) => {
-        expect(res.body.articles[0].title).to.equal('Moustache');
+        expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
       }));
 
     it('ALL ERROR - returns status 405 if user tries to send a method that isnt get', () => request
@@ -259,7 +312,7 @@ describe('/api', () => {
 
 
     describe('/articles/:article_id', () => {
-      it('GET - returns 200 responds with an array of topic objects', () => request
+      it('GET - returns status 200 responds with an array of article objects', () => request
         .get('/api/articles/3')
         .expect(200)
         .then((res) => {
@@ -278,19 +331,19 @@ describe('/api', () => {
           expect(res.body.articles[0].body).to.equal('some gifs');
           expect(res.body.articles).to.have.length(1);
         }));
-      it('GET ERROR - returns 404 if given non existant topic', () => request
+      it('GET ERROR - returns status 404 if given non existant article', () => request
         .get('/api/articles/48964')
         .expect(404)
         .then((res) => {
           expect(res.body.message).to.equal('Page not found');
         }));
-      it('GET ERROR - returns 400 if param given in wrong syntax', () => request
+      it('GET ERROR - returns status 400 if paramater given has invalid syntax', () => request
         .get('/api/articles/hello')
         .expect(400)
         .then((res) => {
           expect(res.body.status).to.equal('invalid input syntax for integer');
         }));
-      it('PATCH - returns status 202 and take an object {inc_votes: newVote} and positively increases votes if postive integer given', () => {
+      it('PATCH - returns status 202 and take an object and positively increases votes if postive integer given', () => {
         request
           .patch('/api/articles/1')
           .send({ inc_votes: 5 })
@@ -300,7 +353,7 @@ describe('/api', () => {
             expect(res.body.voteUpdate[0].votes).to.equal(105);
           });
       });
-      it('PATCH - returns status 202 and takes an object {inc_votes: newVote} and negatively increases votes if negative integer given', () => {
+      it('PATCH - returns status 202 and takes an object and negatively increases votes if negative integer given', () => {
         request
           .patch('/api/articles/1')
           .send({ inc_votes: -25 })
@@ -310,7 +363,7 @@ describe('/api', () => {
             expect(res.body.voteUpdate[0].votes).to.equal(75);
           });
       });
-      it('DELETE - Return status 202 and removes given article by its id', () => request
+      it('DELETE - returns status 202 and removes given article by its id', () => request
         .delete('/api/articles/1')
         .expect(204)
         .then((res) => {
@@ -327,7 +380,7 @@ describe('/api', () => {
 
 
     describe('/articles/:article_id/comments', () => {
-      it('GET - returns 200 responds with an array of topic objects', () => request
+      it('GET - returns status 200 responds with an array of comment objects', () => request
         .get('/api/articles/1/comments')
         .expect(200)
         .then((res) => {
@@ -343,46 +396,70 @@ describe('/api', () => {
           expect(res.body.comments[0].body).to.equal('The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.');
           expect(res.body.comments).to.have.length(10);
         }));
-      it('GET - return 200 status a limit query', () => request
+      it('GET - returns status 200 and abides by a limit query', () => request
         .get('/api/articles/1/comments?limit=5')
         .expect(200).then((res) => {
           expect(res.body.comments).to.have.length(5);
         }));
-      it('GET - return 200 and comments sorted by default of column created_at', () => request
+      it('GET ERROR - returns status 400 if invalid syntax is used in the limit query', () => request
+        .get('/api/articles/1/comments?limit=banana')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.message).to.equal('invalid syntax for limit query');
+        }));
+      it('GET - returns status 200 and comments sorted by default of column created_at', () => request
         .get('/api/articles/1/comments')
         .expect(200)
         .then((res) => {
           expect(res.body.comments[0].comment_id).to.equal(2);
         }));
-      it('GET - return 200 and comments sorted by chosen column', () => request
+      it('GET - returns status 200 and comments sorted by chosen column', () => request
         .get('/api/articles/1/comments?sort_by=comment_id')
-        .expect(200)
-        .then((res) => {
-          expect(res.body.comments[0].comment_id).to.equal(18);
-        }));
-      it('GET - return 200 and comments sorted by default column and user chosen order of sort', () => request
-        .get('/api/articles/1/comments?sort_ascending=true')
-        .expect(200).then((res) => {
-          expect(res.body.comments[0].comment_id).to.equal(18);
-        }));
-      it('GET - return 200 and comments sorted by chosen column and order of sort', () => request
-        .get('/api/articles/1/comments?sort_by=comment_id&sort_ascending=true')
         .expect(200)
         .then((res) => {
           expect(res.body.comments[0].comment_id).to.equal(2);
         }));
-      it('GET - return 200 and comments sorted by chosen column and order of sort', () => request
+      it('GET ERROR - returns status 200 and comments sorted by default of column created_at if invalid sort is given', () => request
+        .get('/api/articles/1/comments?sort_by=banana')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments[0].comment_id).to.equal(2);
+        }));
+      it('GET - returns status 200 and comments sorted by default column and user chosen order of sort', () => request
+        .get('/api/articles/1/comments?sort_ascending=true')
+        .expect(200).then((res) => {
+          expect(res.body.comments[0].comment_id).to.equal(18);
+        }));
+      it('GET ERROR- returns status 200 and return comments descending when sort ascending query is given invalid syntax', () => request
+        .get('/api/articles/1/comments?sort_ascending=banana')
+        .expect(200).then((res) => {
+          expect(res.body.comments[1].comment_id).to.equal(3);
+        }));
+      it('GET - returns status 200 and comments sorted by chosen column and order of sort', () => request
+        .get('/api/articles/1/comments?sort_by=comment_id&sort_ascending=true')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments[0].comment_id).to.equal(18);
+        }));
+      it('GET - returns status 200 and comments on a given page', () => request
         .get('/api/articles/1/comments?p=2')
         .expect(200)
         .then((res) => {
           expect(res.body.comments[0].comment_id).to.equal(12);
         }));
-      it('GET - return 200 and articles sorted by default column and default order of sort when given invalid sort value', () => request
-        .get('/api/articles/1/comments?sort_ascending=banana')
-        .expect(200).then((res) => {
-          expect(res.body.comments[0].comment_id).to.equal(18);
+      it('GET ERROR - returns status 400 if invalid syntax is used in the p query', () => request
+        .get('/api/articles/1/comments?p=banana')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.message).to.equal('invalid syntax for limit query');
         }));
-      it('POST - returns 201 and an object with the posted value', () => {
+      it('GET - returns status 200 and articles sorted by default column and default order of sort when given invalid sort value', () => request
+        .get('/api/articles/1/comments?sort_ascending=banana')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments[0].comment_id).to.equal(2);
+        }));
+      it('POST - returns status 201 and an object with the posted parameter', () => {
         const postTest = {
           user_id: 1,
           body: "Let's get down to business to defeat the huns",
@@ -396,7 +473,7 @@ describe('/api', () => {
             expect(res.body.newComment.comment_id).to.equal(19);
           });
       });
-      it('POST ERROR - returns 400 if the wrong fields are provided', () => {
+      it('POST ERROR - returns status 400 if the incorrect parameters are provided', () => {
         const postTest = {
           hello: 'hello',
           body: "Let's get down to business to defeat the huns",
@@ -404,9 +481,12 @@ describe('/api', () => {
         return request
           .post('/api/articles/1/comments')
           .send(postTest)
-          .expect(400);
+          .expect(400)
+          .then((res) => {
+            expect(res.body.status).to.equal('invalid input');
+          });
       });
-      it('POST ERROR - returns 422 if article parameter doesnt exist', () => {
+      it('POST ERROR - returns status 422 if article parameter doesnt exist', () => {
         const postTest = {
           user_id: 1,
           body: "Let's get down to business to defeat the huns",
@@ -427,7 +507,7 @@ describe('/api', () => {
         }));
 
       describe('/articles/:article_id/comments/:comment_id', () => {
-        it('PATCH - returns status 202 and take an object {inc_votes: newVote} and positively increases votes if postive integer given', () => request
+        it('PATCH - returns status 202 and take an object and positively increases votes if postive integer given', () => request
           .patch('/api/articles/1/comments/2')
           .send({ inc_votes: 5 })
           .expect(202)
@@ -435,7 +515,7 @@ describe('/api', () => {
             expect(res.body.voteUpdate[0].comment_id).to.equal(2);
             expect(res.body.voteUpdate[0].votes).to.equal(19);
           }));
-        it('PATCH - returns status 202 and takes an object {inc_votes: newVote} and negatively increases votes if negative integer given', () => request
+        it('PATCH - returns status 202 and takes an object and negatively increases votes if negative integer given', () => request
           .patch('/api/articles/1/comments/2')
           .send({ inc_votes: -9 })
           .expect(202)
@@ -461,7 +541,7 @@ describe('/api', () => {
   });
 
   describe('/users', () => {
-    it('GET - returns 200 responds with an array of user objects', () => request
+    it('GET - returns status 200 responds with an array of user objects', () => request
       .get('/api/users')
       .expect(200)
       .then((res) => {
@@ -491,7 +571,7 @@ describe('/api', () => {
       }));
 
     describe('/users/user:id', () => {
-      it('GET - returns 200 responds with an array of topic objects', () => request
+      it('GET - returns status 200 responds with an array of user objects', () => request
         .get('/api/users/3')
         .expect(200)
         .then((res) => {
@@ -506,13 +586,13 @@ describe('/api', () => {
           expect(res.body.user[0].name).to.equal('paul');
           expect(res.body.user).to.have.length(1);
         }));
-      it('GET ERROR - returns 404 if given non existant topic', () => request
+      it('GET ERROR - returns status 404 if given non existant topic', () => request
         .get('/api/users/48964')
         .expect(404)
         .then((res) => {
           expect(res.body.message).to.equal('Page not found');
         }));
-      it('GET ERROR - returns 400 if param given in wrong syntax', () => request
+      it('GET ERROR - returns status 400 if param given in wrong syntax', () => request
         .get('/api/users/hello')
         .expect(400)
         .then((res) => {
