@@ -4,9 +4,9 @@ exports.up = function (knex, Promise) {
     commentTable.increments('comment_id').primary();
     commentTable.text('description');
     commentTable.integer('user_id').references('users.user_id');
-    commentTable.integer('article_id').references('articles.article_id');
+    commentTable.integer('article_id').references('articles.article_id').onDelete('CASCADE');
     commentTable.integer('votes').defaultTo(0);
-    commentTable.timestamp('created_at').defaultTo(knex.now());
+    commentTable.timestamp('created_at').defaultTo(knex.fn.now());
     commentTable.text('body');
   });
 };
