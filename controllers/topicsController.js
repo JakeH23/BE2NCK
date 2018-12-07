@@ -62,19 +62,16 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
 
 exports.addArticle = (req, res, next) => {
   const { topic } = req.params;
-  console.log(topic)
-  if (topic === undefined);
   if (req.body.title && req.body.body && req.body.created_by) {
     connection
       .returning('*')
-      .insert(req.body)
+      .insert({ ...req.body, topic })
       .into('articles')
       .then(([newArticle]) => {
-        console.log(newArticle)
         res.status(201).send({ newArticle });
       })
       .catch(next);
   } else {
-    next({ status: 404, message: 'page not found' });
+    next({ status: 400, message: 'invalid input' });
   }
 };

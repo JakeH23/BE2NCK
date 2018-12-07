@@ -80,8 +80,9 @@ exports.deleteArticle = (req, res, next) => {
     .where('article_id', article_id)
     .del()
     .returning('*')
-    .then(() => {
-      res.status(204).send({});
+    .then((amount) => {
+      if (amount === 0) return Promise.reject({ status: 404, message: 'page not found' });
+      return res.status(204).send({});
     })
     .catch(next);
 };
@@ -117,7 +118,7 @@ exports.fetchAllCommentsOnArticle = (req, res, next) => {
     .then((comments) => {
       res.status(200).send({ comments });
     })
-    .catch(next)
+    .catch(next);
 };
 
 exports.addCommentToArticle = (req, res, next) => {
@@ -153,7 +154,7 @@ exports.deleteComment = (req, res, next) => {
     .where('comment_id', comment_id)
     .del()
     .then((comment) => {
-      if (comment.length === 0) return Promise.reject({ status: 404, message: 'page not found' });
+      if (comment === 0) return Promise.reject({ status: 404, message: 'page not found' });
       return res.status(204).send({});
     })
     .catch(next);

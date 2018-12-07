@@ -190,7 +190,7 @@ describe('/api', () => {
             expect(res.body.message).to.equal('invalid input');
           });
       });
-      it.only('POST ERROR - returns status 400 if topic parameter doesnt exist', () => {
+      it('POST ERROR - returns status 404 if topic parameter doesnt exist', () => {
         const postTest = {
           title: 'Heroes And Villians',
           body: "Let's get down to business to defeat the huns",
@@ -199,9 +199,9 @@ describe('/api', () => {
         return request
           .post('/api/topics/bats/articles')
           .send(postTest)
-          .expect(400)
+          .expect(404)
           .then((res) => {
-            expect(res.body.message).to.equal('invalid input');
+            expect(res.body.message).to.equal('page not found');
           });
       });
       it('ALL ERROR - returns status 405 if user tries to send a method that isnt get/post', () => request
@@ -486,7 +486,7 @@ describe('/api', () => {
             expect(res.body.message).to.equal('invalid input');
           });
       });
-      it('POST ERROR - returns status 422 if article parameter doesnt exist', () => {
+      it('POST ERROR - returns status 404 if article parameter doesnt exist', () => {
         const postTest = {
           user_id: 1,
           body: "Let's get down to business to defeat the huns",
@@ -494,9 +494,9 @@ describe('/api', () => {
         return request
           .post('/api/articles/5242/comments')
           .send(postTest)
-          .expect(422)
+          .expect(404)
           .then((res) => {
-            expect(res.body.message).to.equal('the value inserted in foreign key is invalid');
+            expect(res.body.message).to.equal('page not found');
           });
       });
       it('ALL ERROR - returns status 405 if user tries to send a method that isnt get/post', () => request
@@ -588,7 +588,7 @@ describe('/api', () => {
         .get('/api/users/48964')
         .expect(404)
         .then((res) => {
-          expect(res.text.message).to.equal('page not found');
+          expect(res.body.message).to.equal('page not found');
         }));
       it('GET ERROR - returns status 400 if param given in wrong syntax', () => request
         .get('/api/users/hello')

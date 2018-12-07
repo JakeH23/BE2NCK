@@ -15,7 +15,7 @@ exports.fetchSpecificUser = (req, res, next) => {
     .select('*')
     .where({ 'users.user_id': user_id })
     .then(([user]) => {
-      if (user.length === 0) return Promise.reject({ status: 404, message: 'page not found' });
+      if (!user) return Promise.reject({ status: 404, message: 'page not found' });
       return res.status(200).send({ user });
     })
     .catch(next);

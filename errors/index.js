@@ -1,4 +1,5 @@
 exports.handle400 = (err, req, res, next) => {
+  console.log(err);
   const errCodes = {
     42703: 'invalid input',
     '22P02': 'invalid input syntax for integer',
@@ -12,10 +13,9 @@ exports.handle400 = (err, req, res, next) => {
 
 exports.handle422 = (err, req, res, next) => {
   const errCodes = {
-    23503: 'the value inserted in foreign key is invalid',
     23505: 'violates foreign key constraint',
   };
-  if (err.status === 422) res.status(422).send({ message: err.message });
+  if (err.status === 422 || err.constraint === 'articles_user_id_foreign' || err.constraint === 'comments_user_id_foreign') res.status(422).send({ message: 'unprocessable entity' });
   else if (errCodes[err.code]) {
     res.status(422)
       .send({ message: errCodes[err.code] });
@@ -23,7 +23,7 @@ exports.handle422 = (err, req, res, next) => {
 };
 
 exports.handle404 = (err, req, res, next) => {
-  if (err.status === 404) res.status(404).send({ message: err.message });
+  if (err.status === 404 || err.constraint === 'articles_topic_foreign' || err.constraint === 'comments_article_id_foreign') res.status(404).send({ message: 'page not found' });
   else next(err);
 };
 
