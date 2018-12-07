@@ -6,24 +6,27 @@ exports.handle400 = (err, req, res, next) => {
   if (err.status === 400) res.status(400).send({ message: err.message });
   else if (errCodes[err.code]) {
     res.status(400)
-      .send({ status: errCodes[err.code] });
+      .send({ message: errCodes[err.code] });
   } else next(err);
 };
 
 exports.handle422 = (err, req, res, next) => {
-  const codes = {
+  const errCodes = {
     23503: 'the value inserted in foreign key is invalid',
     23505: 'violates foreign key constraint',
   };
-  if (codes[err.code]) res.status(422).send({ message: codes[err.code] });
-  else next(err);
-};
-
-exports.handle405 = (req, res, next) => {
-  res.status(405).json({ status: 405, message: 'this method is not allowed' });
+  if (err.status === 422) res.status(422).send({ message: err.message });
+  else if (errCodes[err.code]) {
+    res.status(422)
+      .send({ message: errCodes[err.code] });
+  } else next(err);
 };
 
 exports.handle404 = (err, req, res, next) => {
   if (err.status === 404) res.status(404).send({ message: err.message });
   else next(err);
+};
+
+exports.handle405 = (req, res, next) => {
+  res.status(405).send({ status: 405, message: 'this method is not allowed' });
 };

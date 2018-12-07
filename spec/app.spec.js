@@ -46,7 +46,7 @@ describe('/api', () => {
       .send({ football: 'UP THE VILLA BOYS!' })
       .expect(400)
       .then((res) => {
-        expect(res.body.status).to.equal('invalid input');
+        expect(res.body.message).to.equal('invalid input');
       }));
     it('ALL ERROR - returns status 405 if user tries to send a method that isnt get/post', () => request
       .delete('/api/topics')
@@ -159,7 +159,7 @@ describe('/api', () => {
         .get('/api/topics/banana/articles')
         .expect(404)
         .then((res) => {
-          expect(res.body.message).to.equal('Page not found');
+          expect(res.body.message).to.equal('page not found');
         }));
       it('POST - returns status 201 and an object with the given parameters', () => {
         const postTest = {
@@ -187,7 +187,7 @@ describe('/api', () => {
           .send(postTest)
           .expect(400)
           .then((res) => {
-            expect(res.body.status).to.equal('invalid input');
+            expect(res.body.message).to.equal('invalid input');
           });
       });
       it('POST ERROR - returns status 422 if topic parameter doesnt exist', () => {
@@ -335,13 +335,13 @@ describe('/api', () => {
         .get('/api/articles/48964')
         .expect(404)
         .then((res) => {
-          expect(res.body.message).to.equal('Page not found');
+          expect(res.body.message).to.equal('page not found');
         }));
       it('GET ERROR - returns status 400 if paramater given has invalid syntax', () => request
         .get('/api/articles/hello')
         .expect(400)
         .then((res) => {
-          expect(res.body.status).to.equal('invalid input syntax for integer');
+          expect(res.body.message).to.equal('invalid input syntax for integer');
         }));
       it('PATCH - returns status 202 and take an object and positively increases votes if postive integer given', () => {
         request
@@ -483,7 +483,7 @@ describe('/api', () => {
           .send(postTest)
           .expect(400)
           .then((res) => {
-            expect(res.body.status).to.equal('invalid input');
+            expect(res.body.message).to.equal('invalid input');
           });
       });
       it('POST ERROR - returns status 422 if article parameter doesnt exist', () => {
@@ -586,17 +586,17 @@ describe('/api', () => {
           expect(res.body.user[0].name).to.equal('paul');
           expect(res.body.user).to.have.length(1);
         }));
-      it('GET ERROR - returns status 404 if given non existant topic', () => request
+      it('GET ERROR - returns status 404 if given non existant user_id', () => request
         .get('/api/users/48964')
         .expect(404)
         .then((res) => {
-          expect(res.body.message).to.equal('Page not found');
+          expect(res.body.message).to.equal('page not found');
         }));
       it('GET ERROR - returns status 400 if param given in wrong syntax', () => request
         .get('/api/users/hello')
         .expect(400)
         .then((res) => {
-          expect(res.body.status).to.equal('invalid input syntax for integer');
+          expect(res.body.message).to.equal('invalid input syntax for integer');
         }));
       it('ALL ERROR - returns status 405 if user tries to send a method that isnt get', () => request
         .post('/api/users/1')

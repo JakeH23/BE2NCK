@@ -12,13 +12,11 @@ app.use((req, res, next) => {
   } else next();
 });
 
-
 app.use('/api', apiRouter);
 
 app.use('/*', (req, res, next) => {
   next({ status: 404, message: 'page not found' });
 });
-
 
 app.use(handle400);
 app.use(handle422);

@@ -31,7 +31,7 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
   if (sort_ascending === 'true') {
     order_by = 'asc';
   }
-  const validSortQueries = ['title', 'article_id', 'created_by', 'body', 'created_at'];
+  const validSortQueries = ['title', 'author', 'article_id', 'created_at', 'body', 'created_at', 'votes', 'comment_count'];
   if (!validSortQueries.includes(sort_by)) sort_by = 'created_at';
   if (isNaN(p)) return next({ status: 400, message: 'invalid syntax for limit query' });
 
@@ -54,7 +54,7 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
     .offset(maxResult * (p - 1))
     .orderBy(sort_by, order_by)
     .then((articles) => {
-      if (articles.length === 0) return Promise.reject({ status: 404, message: 'Page not found' });
+      if (articles.length === 0) return Promise.reject({ status: 404, message: 'page not found' });
       return res.status(200).send({ articles });
     })
     .catch(next);

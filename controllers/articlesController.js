@@ -5,12 +5,12 @@ exports.getAllArticles = (req, res, next) => {
   let { sort_by } = req.query;
   const { sort_ascending } = req.query;
   const { p = 1 } = req.query;
-  let order_by = 'desc';
   if (isNaN(maxResult)) return next({ status: 400, message: 'invalid syntax for limit query' });
+  let order_by = 'desc';
   if (sort_ascending === 'true') {
     order_by = 'asc';
   }
-  const validSortQueries = ['title', 'article_id', 'created_by', 'body', 'created_at'];
+  const validSortQueries = ['author', 'title', 'article_id', 'votes', 'comment_count', 'body', 'created_at'];
   if (!validSortQueries.includes(sort_by)) sort_by = 'created_at';
   if (isNaN(p)) return next({ status: 400, message: 'invalid syntax for limit query' });
 
@@ -54,7 +54,7 @@ exports.fetchSpecificArticle = (req, res, next) => {
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
     .then((articles) => {
-      if (articles.length === 0) return Promise.reject({ status: 404, message: 'Page not found' });
+      if (articles.length === 0) return Promise.reject({ status: 404, message: 'page not found' });
       return res.status(200).send({ articles });
     })
     .catch(next);
@@ -68,7 +68,7 @@ exports.updateArticleVotes = (req, res, next) => {
     .increment('votes', inc_votes)
     .returning('*')
     .then((voteUpdate) => {
-      if (voteUpdate.length === 0) next({ status: 404, message: 'Page not found' });
+      if (voteUpdate.length === 0) next({ status: 404, message: 'page not found' });
       return res.status(202).send({ voteUpdate });
     })
     .catch(next);
@@ -92,8 +92,8 @@ exports.fetchAllCommentsOnArticle = (req, res, next) => {
   let { sort_by } = req.query;
   const { sort_ascending } = req.query;
   const { p = 1 } = req.query;
-  let order_by = 'desc';
   if (isNaN(maxResult)) return next({ status: 400, message: 'invalid syntax for limit query' });
+  let order_by = 'desc';
   if (sort_ascending === 'true') {
     order_by = 'asc';
   }
@@ -152,7 +152,7 @@ exports.deleteComment = (req, res, next) => {
     .where('comment_id', comment_id)
     .del()
     .then((comment) => {
-      if (comment.length === 0) return Promise.reject({ status: 404, message: 'Page not found' });
+      if (comment.length === 0) return Promise.reject({ status: 404, message: 'page not found' });
       return res.status(204).send({});
     })
     .catch(next);
