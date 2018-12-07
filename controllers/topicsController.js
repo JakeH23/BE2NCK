@@ -27,13 +27,14 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
   const { sort_ascending } = req.query;
   const { p = 1 } = req.query;
   let order_by = 'desc';
+  if (isNaN(maxResult)) return next({ status: 400, message: 'invalid syntax for limit query' });
   if (sort_ascending === 'true') {
     order_by = 'asc';
   }
-  if (isNaN(+maxResult)) return next({ status: 400, message: 'invalid syntax for limit query' });
-  if (isNaN(+p)) return next({ status: 400, message: 'invalid syntax for limit query' });
   const validSortQueries = ['title', 'article_id', 'created_by', 'body', 'created_at'];
   if (!validSortQueries.includes(sort_by)) sort_by = 'created_at';
+  if (isNaN(p)) return next({ status: 400, message: 'invalid syntax for limit query' });
+
   return connection('articles')
     .select(
       'articles.title',

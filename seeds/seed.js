@@ -18,7 +18,7 @@ exports.seed = function (knex, Promise) {
     .then(() => knex('topics')
       .insert(topicData)
       .returning('*'))
-    .then(topicRows => knex('users')
+    .then(() => knex('users')
       .insert(userData)
       .returning('*'))
     .then((usersRows) => {

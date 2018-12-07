@@ -417,7 +417,7 @@ describe('/api', () => {
         .get('/api/articles/1/comments?sort_by=comment_id')
         .expect(200)
         .then((res) => {
-          expect(res.body.comments[0].comment_id).to.equal(2);
+          expect(res.body.comments[0].comment_id).to.equal(18);
         }));
       it('GET ERROR - returns status 200 and comments sorted by default of column created_at if invalid sort is given', () => request
         .get('/api/articles/1/comments?sort_by=banana')
@@ -439,7 +439,7 @@ describe('/api', () => {
         .get('/api/articles/1/comments?sort_by=comment_id&sort_ascending=true')
         .expect(200)
         .then((res) => {
-          expect(res.body.comments[0].comment_id).to.equal(18);
+          expect(res.body.comments[0].comment_id).to.equal(2);
         }));
       it('GET - returns status 200 and comments on a given page', () => request
         .get('/api/articles/1/comments?p=2')
