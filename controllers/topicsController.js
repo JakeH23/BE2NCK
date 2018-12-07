@@ -31,7 +31,7 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
   if (sort_ascending === 'true') {
     order_by = 'asc';
   }
-  const validSortQueries = ['title', 'author', 'article_id', 'created_at', 'body', 'created_at', 'votes', 'comment_count'];
+  const validSortQueries = ['title', 'author', 'article_id', 'created_at', 'created_at', 'votes', 'comment_count'];
   if (!validSortQueries.includes(sort_by)) sort_by = 'created_at';
   if (isNaN(p)) return next({ status: 400, message: 'invalid syntax for limit query' });
 
@@ -61,13 +61,20 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
 };
 
 exports.addArticle = (req, res, next) => {
-  const newInsert = { ...req.body, ...req.params };
-  connection
-    .insert(newInsert)
-    .into('articles')
-    .returning('*')
-    .then(([newArticle]) => {
-      res.status(201).send({ newArticle });
-    })
-    .catch(next);
+  const { topic } = req.params;
+  console.log(topic)
+  if (topic === undefined);
+  if (req.body.title && req.body.body && req.body.created_by) {
+    connection
+      .returning('*')
+      .insert(req.body)
+      .into('articles')
+      .then(([newArticle]) => {
+        console.log(newArticle)
+        res.status(201).send({ newArticle });
+      })
+      .catch(next);
+  } else {
+    next({ status: 404, message: 'page not found' });
+  }
 };

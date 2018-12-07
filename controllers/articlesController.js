@@ -69,7 +69,7 @@ exports.updateArticleVotes = (req, res, next) => {
     .returning('*')
     .then((voteUpdate) => {
       if (voteUpdate.length === 0) next({ status: 404, message: 'page not found' });
-      return res.status(202).send({ voteUpdate });
+      return res.status(200).send({ voteUpdate });
     })
     .catch(next);
 };
@@ -116,7 +116,8 @@ exports.fetchAllCommentsOnArticle = (req, res, next) => {
     .orderBy(sort_by, order_by)
     .then((comments) => {
       res.status(200).send({ comments });
-    });
+    })
+    .catch(next)
 };
 
 exports.addCommentToArticle = (req, res, next) => {
@@ -125,8 +126,8 @@ exports.addCommentToArticle = (req, res, next) => {
     .insert(newInsert)
     .into('comments')
     .returning('*')
-    .then(([newComment]) => {
-      res.status(201).send({ newComment });
+    .then(([comment]) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };
@@ -139,7 +140,7 @@ exports.updateCommentVotes = (req, res, next) => {
     .returning('*')
     .then((voteUpdate) => {
       if (voteUpdate.length === 0) return next({ status: 404, message: 'comment id not found' });
-      return res.status(202).send({ voteUpdate });
+      return res.status(200).send({ voteUpdate });
     })
     .catch(next);
 };

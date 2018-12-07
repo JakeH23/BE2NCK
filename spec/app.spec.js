@@ -190,7 +190,7 @@ describe('/api', () => {
             expect(res.body.message).to.equal('invalid input');
           });
       });
-      it('POST ERROR - returns status 422 if topic parameter doesnt exist', () => {
+      it.only('POST ERROR - returns status 400 if topic parameter doesnt exist', () => {
         const postTest = {
           title: 'Heroes And Villians',
           body: "Let's get down to business to defeat the huns",
@@ -199,9 +199,9 @@ describe('/api', () => {
         return request
           .post('/api/topics/bats/articles')
           .send(postTest)
-          .expect(422)
+          .expect(400)
           .then((res) => {
-            expect(res.body.message).to.equal('the value inserted in foreign key is invalid');
+            expect(res.body.message).to.equal('invalid input');
           });
       });
       it('ALL ERROR - returns status 405 if user tries to send a method that isnt get/post', () => request
@@ -347,7 +347,7 @@ describe('/api', () => {
         request
           .patch('/api/articles/1')
           .send({ inc_votes: 5 })
-          .expect(202)
+          .expect(200)
           .then((res) => {
             expect(res.body.voteUpdate[0].title).to.equal('Living in the shadow of a great man');
             expect(res.body.voteUpdate[0].votes).to.equal(105);
@@ -357,7 +357,7 @@ describe('/api', () => {
         request
           .patch('/api/articles/1')
           .send({ inc_votes: -25 })
-          .expect(202)
+          .expect(200)
           .then((res) => {
             expect(res.body.voteUpdate[0].title).to.equal('Living in the shadow of a great man');
             expect(res.body.voteUpdate[0].votes).to.equal(75);
@@ -469,8 +469,8 @@ describe('/api', () => {
           .send(postTest)
           .expect(201)
           .then((res) => {
-            expect(res.body.newComment).to.haveOwnProperty('comment_id');
-            expect(res.body.newComment.comment_id).to.equal(19);
+            expect(res.body.comment).to.haveOwnProperty('comment_id');
+            expect(res.body.comment.comment_id).to.equal(19);
           });
       });
       it('POST ERROR - returns status 400 if the incorrect parameters are provided', () => {
@@ -510,7 +510,7 @@ describe('/api', () => {
         it('PATCH - returns status 202 and take an object and positively increases votes if postive integer given', () => request
           .patch('/api/articles/1/comments/2')
           .send({ inc_votes: 5 })
-          .expect(202)
+          .expect(200)
           .then((res) => {
             expect(res.body.voteUpdate[0].comment_id).to.equal(2);
             expect(res.body.voteUpdate[0].votes).to.equal(19);
@@ -518,7 +518,7 @@ describe('/api', () => {
         it('PATCH - returns status 202 and takes an object and negatively increases votes if negative integer given', () => request
           .patch('/api/articles/1/comments/2')
           .send({ inc_votes: -9 })
-          .expect(202)
+          .expect(200)
           .then((res) => {
             expect(res.body.voteUpdate[0].comment_id).to.equal(2);
             expect(res.body.voteUpdate[0].votes).to.equal(5);
@@ -575,22 +575,20 @@ describe('/api', () => {
         .get('/api/users/3')
         .expect(200)
         .then((res) => {
-          expect(res.body.user).to.be.an('array');
-          expect(res.body.user[0]).to.have.all.keys(
+          expect(res.body.user).to.have.all.keys(
             'user_id',
             'username',
             'avatar_url',
             'name',
           );
-          expect(res.body.user[0].username).to.equal('rogersop');
-          expect(res.body.user[0].name).to.equal('paul');
-          expect(res.body.user).to.have.length(1);
+          expect(res.body.user.username).to.equal('rogersop');
+          expect(res.body.user.name).to.equal('paul');
         }));
       it('GET ERROR - returns status 404 if given non existant user_id', () => request
         .get('/api/users/48964')
         .expect(404)
         .then((res) => {
-          expect(res.body.message).to.equal('page not found');
+          expect(res.text.message).to.equal('page not found');
         }));
       it('GET ERROR - returns status 400 if param given in wrong syntax', () => request
         .get('/api/users/hello')
