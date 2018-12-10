@@ -1,5 +1,4 @@
 exports.handle400 = (err, req, res, next) => {
-  console.log(err);
   const errCodes = {
     42703: 'invalid input',
     '22P02': 'invalid input syntax for integer',
