@@ -9,15 +9,15 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use((req, res, next) => {
-	if (req.url === '/api') {
-		res.status(200).send({ paths: listEndpoints(app) });
-	} else next();
+  if (req.url === '/api') {
+    res.status(200).send({ paths: listEndpoints(app) });
+  } else next();
 });
 
 app.use('/api', apiRouter);
 
 app.use('/*', (req, res, next) => {
-	next({ status: 404, message: 'page not found' });
+  next({ status: 404, message: 'page not found' });
 });
 
 app.use(handle400);
