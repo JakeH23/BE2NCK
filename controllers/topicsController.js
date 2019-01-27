@@ -39,14 +39,14 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
 		.select(
 			'articles.title',
 			'articles.topic',
-			'users.username AS author',
+			'username AS author',
 			'articles.article_id',
 			'articles.body',
 			'articles.created_at',
 			'articles.votes'
 		)
 		.count('comments.comment_id AS comment_count')
-		.groupBy('articles.article_id')
+		.groupBy('articles.article_id', 'users.username')
 		.leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
 		.join('users', 'articles.created_by', 'users.user_id')
 		.where({ topic })
