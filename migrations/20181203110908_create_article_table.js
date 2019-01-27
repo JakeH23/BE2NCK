@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
 		articleTable.text('body').notNullable();
 		articleTable.integer('votes').defaultTo(0);
 		articleTable.string('topic').references('topics.slug');
-		articleTable.integer('created_by').references('users.username');
+		articleTable.integer('created_by').references('users.user_id');
 		articleTable.timestamp('created_at').defaultTo(knex.fn.now());
 	});
 };
