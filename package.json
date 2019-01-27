@@ -1,47 +1,47 @@
 {
-  "name": "BE2-NC-Knews",
-  "version": "1.0.0",
-  "description": "## Northcoders News API",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha ./spec/",
-    "lint": "eslint ./",
-    "pre-commit": "npm t",
-    "posttest": "npm run lint",
-    "lint-fix": "eslint --fix ./",
-    "seed:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex seed:run --env production",
-    "migrate:latest:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest --env production",
-    "migrate:rollback:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback --env production",
-    "start": "node listen.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/northcoders/BE2-NC-Knews.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/northcoders/BE2-NC-Knews/issues"
-  },
-  "homepage": "https://github.com/northcoders/BE2-NC-Knews#readme",
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "chai": "^4.2.0",
-    "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "express-list-endpoints": "^4.0.0",
-    "knex": "^0.15.2",
-    "mocha": "^5.2.0",
-    "moment": "^2.22.2",
-    "moments": "0.0.2",
-    "pg": "^7.6.1",
-    "supertest": "^3.3.0"
-  },
-  "devDependencies": {
-    "eslint": "^5.9.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "husky": "^1.1.4"
-  }
+	"name": "BE2-NC-Knews",
+	"version": "1.0.0",
+	"description": "## Northcoders News API",
+	"main": "index.js",
+	"scripts": {
+		"test": "mocha ./spec/",
+		"lint": "eslint ./",
+		"pre-commit": "npm t",
+		"posttest": "npm run lint",
+		"lint-fix": "eslint --fix ./",
+		"seed:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex seed:run --env production",
+		"migrate:latest:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest --env production",
+		"migrate:rollback:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback --env production",
+		"start": "node listen.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/northcoders/BE2-NC-Knews.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/northcoders/BE2-NC-Knews/issues"
+	},
+	"homepage": "https://github.com/northcoders/BE2-NC-Knews#readme",
+	"dependencies": {
+		"body-parser": "^1.18.3",
+		"chai": "^4.2.0",
+		"cors": "^2.8.5",
+		"express": "^4.16.4",
+		"express-list-endpoints": "^4.0.0",
+		"knex": "^0.15.2",
+		"mocha": "^5.2.0",
+		"moment": "^2.22.2",
+		"moments": "0.0.2",
+		"pg": "^7.6.1",
+		"supertest": "^3.3.0"
+	},
+	"devDependencies": {
+		"eslint": "^5.9.0",
+		"eslint-config-airbnb": "^17.1.0",
+		"eslint-plugin-import": "^2.14.0",
+		"husky": "^1.1.4"
+	}
 }
