@@ -39,7 +39,7 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
 		.select(
 			'articles.title',
 			'articles.topic',
-			'username AS author',
+			'articles.author',
 			'articles.article_id',
 			'articles.body',
 			'articles.created_at',
@@ -48,7 +48,7 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
 		.count('comments.comment_id AS comment_count')
 		.groupBy('articles.article_id')
 		.leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
-		.join('users', 'articles.created_by', 'users.username')
+		.join('users', 'articles.created_by', 'users.user_id')
 		.where({ topic })
 		.limit(maxResult)
 		.offset(maxResult * (p - 1))
