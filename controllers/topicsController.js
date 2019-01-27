@@ -39,7 +39,7 @@ exports.fetchAllArticlesOnTopic = (req, res, next) => {
 		.select(
 			'articles.title',
 			'articles.topic',
-			'users.username AS author',
+			'username AS author',
 			'articles.article_id',
 			'articles.body',
 			'articles.created_at',
